@@ -1,4 +1,5 @@
 import 'package:egypt_metro_navigator/app/initial_binding.dart';
+import 'package:egypt_metro_navigator/data/repositories/metro_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -35,9 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+    Get.find<MetroRepository>().printTest();
   }
 
   @override
