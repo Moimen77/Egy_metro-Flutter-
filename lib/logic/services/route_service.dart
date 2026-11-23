@@ -1,52 +1,17 @@
-import 'package:egypt_metro_navigator/data/models/JourneyInfo.dart';
-import 'package:egypt_metro_navigator/data/models/station.dart';
+import '../../data/models/station.dart';
+import '../../data/repositories/metro_repository.dart';
+import '../algorithms/bfs.dart';
 
-class JourneyCalculator {
-  // Configurable assumptions
-  static const int minutesPerStation = 2;
-  static const int minutesPerTransfer = 5;
+class RouteService {
+  // بيرجع المسار المحطات ال بين محطتين
+  final MetroRepository repository;
 
-  static JourneyInfo calculate(List<Station> route) {
-    if (route.isEmpty) {
-      throw ArgumentError('Route cannot be empty');
-    }
+  RouteService({required this.repository});
 
-    final int stationsInRoute = route.length;
-    final int connections = stationsInRoute - 1;
-
-    // عدد التحويلات بين المسارات
-    int transfers = 0;
-
-    for (int i = 1; i < route.length; i++) {
-      if (route[i].lineId != route[i - 1].lineId) {
-        transfers++;
-      }
-    }
-
-    // عدد المحطات التي انتقلنا إليها
-    final int stationsTravelled = connections - transfers;
-
-    // حساب سعر التذكرة
-    final int ticketPrice = calculateTicketPrice(stationsTravelled);
-
-    // حساب الوقت المتوقع
-    final int estimatedMinutes =
-        (connections * minutesPerStation) + (transfers * minutesPerTransfer);
-
-    return JourneyInfo(
-      stationsInRoute: stationsInRoute,
-      stationsTravelled: stationsTravelled,
-      connections: connections,
-      transfers: transfers,
-      ticketPrice: ticketPrice,
-      estimatedMinutes: estimatedMinutes,
-    );
-  }
-
-  static int calculateTicketPrice(int stations) {
-    if (stations <= 9) return 10;
-    if (stations <= 16) return 12;
-    if (stations <= 23) return 15;
-    return 20;
+  List<Station>? findRoute({
+    required int startStationId,
+    required int destinationStationId,
+  }) {
+    return bfs(repository.graph, startStationId, destinationStationId);
   }
 }
