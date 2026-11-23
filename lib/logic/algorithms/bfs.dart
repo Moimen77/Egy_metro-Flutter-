@@ -41,7 +41,7 @@ List<Station>? bfs(MetroGraph graph, int startId, int destinationId) {
 
       // لو وصلنا للوجهة
       if (neighborId == destinationId) {
-        return reconstructPath(graph, parent, destinationId);
+        return _reconstructPath(graph, parent, destinationId);
       }
 
       queue.add(neighborId);
@@ -52,7 +52,7 @@ List<Station>? bfs(MetroGraph graph, int startId, int destinationId) {
   return null;
 }
 
-List<Station> reconstructPath(
+List<Station> _reconstructPath(
   MetroGraph graph,
   Map<int, int?> parent,
   int destinationId,

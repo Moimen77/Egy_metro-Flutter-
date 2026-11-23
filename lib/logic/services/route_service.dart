@@ -24,7 +24,7 @@ class JourneyCalculator {
     }
 
     // عدد المحطات التي انتقلنا إليها
-    final int stationsTravelled = connections;
+    final int stationsTravelled = connections - transfers;
 
     // حساب سعر التذكرة
     final int ticketPrice = calculateTicketPrice(stationsTravelled);
