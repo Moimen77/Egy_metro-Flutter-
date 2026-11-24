@@ -4,8 +4,16 @@ class Station {
   final int id;
   final String name;
   final int lineId;
+  final double latitude;
+  final double longitude;
 
-  const Station({required this.id, required this.name, required this.lineId});
+  const Station({
+    required this.id,
+    required this.name,
+    required this.lineId,
+    required this.latitude,
+    required this.longitude,
+  });
 
   @override
   String toString() => '$name (Line $lineId)';
