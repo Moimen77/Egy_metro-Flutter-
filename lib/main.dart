@@ -1,6 +1,11 @@
+import 'package:egypt_metro_navigator/app/app_routes.dart';
 import 'package:egypt_metro_navigator/app/initial_binding.dart';
 import 'package:egypt_metro_navigator/core/services/geocoding_service.dart';
+import 'package:egypt_metro_navigator/core/theme/AppTheme.dart';
 import 'package:egypt_metro_navigator/data/repositories/placeRepo.dart';
+import 'package:egypt_metro_navigator/data/sources/metro/metro_data.dart';
+import 'package:egypt_metro_navigator/logic/services/nearest_station_service.dart';
+import 'package:egypt_metro_navigator/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -22,6 +27,27 @@ void printTest() async {
   }
 }
 
+void PrintNearStation() async {
+  final placeRepository = PlaceRepository(geocodingService: GeocodingService());
+
+  final places = await placeRepository.searchPlaces('Nasr City');
+
+  final nearestService = NearestStationService();
+
+  if (places.isNotEmpty) {
+    final result = nearestService.findNearestStation(
+      place: places.first,
+      lines: allLines,
+    );
+
+    if (result != null) {
+      print('Nearest Station: ${result.station.name}');
+      print('Line: ${result.station.lineId}');
+      print('Distance: ${result.distanceInKm.toStringAsFixed(2)} KM');
+    }
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -32,8 +58,9 @@ class MyApp extends StatelessWidget {
       initialBinding: InitialBinding(),
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      theme: AppTheme.light,
+      getPages: AppPages.routes,
+      initialRoute: AppRoutes.placeSearch,
     );
   }
 }
@@ -52,6 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     printTest();
+    PrintNearStation();
   }
 
   @override
