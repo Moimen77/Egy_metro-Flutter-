@@ -1,10 +1,25 @@
 import 'package:egypt_metro_navigator/app/initial_binding.dart';
-import 'package:egypt_metro_navigator/data/repositories/metro_repository.dart';
+import 'package:egypt_metro_navigator/core/services/geocoding_service.dart';
+import 'package:egypt_metro_navigator/data/repositories/placeRepo.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 void main() {
   runApp(const MyApp());
+}
+
+void printTest() async {
+  try {
+    final repository = PlaceRepository(geocodingService: GeocodingService());
+
+    final places = await repository.searchPlaces('Nasr City');
+
+    for (final place in places) {
+      print(place.displayAddress);
+    }
+  } catch (e) {
+    print(e);
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -36,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
-    Get.find<MetroRepository>().printTest();
+    printTest();
   }
 
   @override
