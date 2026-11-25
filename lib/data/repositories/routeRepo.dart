@@ -3,6 +3,7 @@ import 'package:egypt_metro_navigator/data/models/JourneyInfo.dart';
 import 'package:egypt_metro_navigator/data/models/nearest_station_result.dart';
 import 'package:egypt_metro_navigator/logic/services/journeycalculator.dart';
 import 'package:egypt_metro_navigator/logic/services/nearest_station_service.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../models/station.dart';
 import 'metro_repository.dart';
@@ -26,13 +27,17 @@ class RouteRepository {
     return metroRepository.getAllStations();
   }
 
-  // Get nearest metro station to current GPS location.
-  Future<NearestStationResult?> findNearestStationFromCurrentLocation() async {
-    final position = await locationService.getCurrentLocation();
+  Future<Position> getCurrentLocation() {
+    return locationService.getCurrentLocation();
+  }
 
+  NearestStationResult? findNearestStationByCoordinates({
+    required double latitude,
+    required double longitude,
+  }) {
     return nearestStationService.findNearestStationByCoordinates(
-      latitude: position.latitude,
-      longitude: position.longitude,
+      latitude: latitude,
+      longitude: longitude,
       lines: metroRepository.getAllLines(),
     );
   }

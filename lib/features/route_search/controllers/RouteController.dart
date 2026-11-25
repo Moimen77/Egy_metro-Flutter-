@@ -1,5 +1,6 @@
 import 'package:egypt_metro_navigator/data/repositories/routeRepo.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../data/models/station.dart';
 import '../../../data/models/JourneyInfo.dart';
@@ -24,6 +25,9 @@ class RouteController extends GetxController {
   // Nearest station result
   final Rxn<NearestStationResult> nearestStationResult =
       Rxn<NearestStationResult>();
+
+  final Rxn<double> currentLatitude = Rxn<double>();
+  final Rxn<double> currentLongitude = Rxn<double>();
 
   // UI states
   final RxBool isCalculating = false.obs;
@@ -66,30 +70,69 @@ class RouteController extends GetxController {
     isGettingLocation.value = true;
 
     try {
-      final result = await repository.findNearestStationFromCurrentLocation();
+      final position = await repository.getCurrentLocation();
+
+      final result = repository.findNearestStationByCoordinates(
+        latitude: position.latitude,
+        longitude: position.longitude,
+      );
 
       if (result == null) {
         errorMessage.value = 'No metro stations found';
         return;
       }
 
-      nearestStationResult.value = result;
+      // Save user's coordinates
+      currentLatitude.value = position.latitude;
+      currentLongitude.value = position.longitude;
 
-      // Automatically select nearest station as start station
+      nearestStationResult.value = result;
       startStationId.value = result.station.id;
 
       clearRouteResult();
-
-      Get.snackbar(
-        'Location detected',
-        'Nearest station: ${result.station.name}',
-      );
     } catch (e) {
       errorMessage.value = _getLocationErrorMessage(e);
-
-      print('Location Error: $e');
     } finally {
       isGettingLocation.value = false;
+    }
+  }
+
+  Future<void> openGoogleMapsToStartStation() async {
+    final latitude = currentLatitude.value;
+    final longitude = currentLongitude.value;
+    final stationId = startStationId.value;
+
+    if (latitude == null || longitude == null || stationId == null) {
+      Get.snackbar(
+        'Location unavailable',
+        'Please detect your current location first',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    Station? selectedStation;
+
+    for (final station in stations) {
+      if (station.id == stationId) {
+        selectedStation = station;
+        break;
+      }
+    }
+
+    if (selectedStation == null) return;
+
+    final uri = Uri.https('www.google.com', '/maps/dir/', {
+      'api': '1',
+      'origin': '$latitude,$longitude',
+      'destination': '${selectedStation.latitude},${selectedStation.longitude}',
+    });
+
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      Get.snackbar('Error', 'Could not open Google Maps');
+      print('Google Maps Error: $e');
     }
   }
 
