@@ -8,9 +8,9 @@ void addMetroTransfers(MetroGraph graph, List<MetroLine> lines) {
     graph,
     lines,
     line1Id: 1,
-    station1Name: 'Sadat',
+    station1Name: 'السادات',
     line2Id: 2,
-    station2Name: 'Sadat',
+    station2Name: 'السادات',
   );
 
   // Shohadaa: Line 1 <-> Line 2
@@ -18,9 +18,9 @@ void addMetroTransfers(MetroGraph graph, List<MetroLine> lines) {
     graph,
     lines,
     line1Id: 1,
-    station1Name: 'Al-Shohadaa',
+    station1Name: 'الشهداء',
     line2Id: 2,
-    station2Name: 'Al-Shohadaa',
+    station2Name: 'الشهداء',
   );
 
   // Ataba: Line 2 <-> Line 3
@@ -28,25 +28,25 @@ void addMetroTransfers(MetroGraph graph, List<MetroLine> lines) {
     graph,
     lines,
     line1Id: 2,
-    station1Name: 'Attaba',
+    station1Name: 'العتبة',
     line2Id: 3,
-    station2Name: 'Attaba',
+    station2Name: 'العتبة',
   );
   connectStations(
     graph,
     lines,
     line1Id: 3,
-    station1Name: 'Kit Kat',
+    station1Name: 'الكيت كات',
     line2Id: 4,
-    station2Name: 'Kit Kat',
+    station2Name: 'الكيت كات',
   );
   connectStations(
     graph,
     lines,
     line1Id: 2,
-    station1Name: 'Cairo University',
+    station1Name: 'جامعة القاهرة',
     line2Id: 4,
-    station2Name: 'Cairo University',
+    station2Name: 'جامعة القاهرة',
   );
 }
 
