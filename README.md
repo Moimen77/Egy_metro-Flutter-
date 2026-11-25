@@ -1,5 +1,6 @@
 
-# Egypt Metro Navigator
+# Egypt Metro Navigator 
+By مؤمن عادل الحسانين ديغم
 
 A Flutter application for navigating the Cairo Metro network.
 
