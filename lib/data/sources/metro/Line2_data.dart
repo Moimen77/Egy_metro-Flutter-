@@ -4,7 +4,7 @@ import 'package:egypt_metro_navigator/data/models/station.dart';
 final MetroLine line2 = MetroLine(
   id: 2,
   name: 'الخط الثاني',
-  directions: ['المنيب', 'شبرا الخيمة'],
+  directions: ['شبرا الخيمة', 'المنيب'],
   stations: List.generate(
     line2Stations.length,
     (index) => Station(
