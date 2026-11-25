@@ -86,6 +86,22 @@ class RouteSearchView extends GetView<RouteController> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: OutlinedButton.icon(
+                      onPressed: () => controller.useCurrentLocation(),
+                      icon: const Icon(Icons.location_searching),
+                      label: const Text(
+                        'ابحث عن أقرب محطة لمكانك',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
 
                   const SizedBox(height: 12),
 

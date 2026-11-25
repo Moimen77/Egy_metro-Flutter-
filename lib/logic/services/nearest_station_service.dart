@@ -6,8 +6,22 @@ import 'package:egypt_metro_navigator/data/models/placeSugestion.dart';
 import 'package:egypt_metro_navigator/data/models/station.dart';
 
 class NearestStationService {
+  // Search using a selected place
   NearestStationResult? findNearestStation({
     required PlaceSuggestion place,
+    required List<MetroLine> lines,
+  }) {
+    return findNearestStationByCoordinates(
+      latitude: place.latitude,
+      longitude: place.longitude,
+      lines: lines,
+    );
+  }
+
+  // Search using GPS coordinates
+  NearestStationResult? findNearestStationByCoordinates({
+    required double latitude,
+    required double longitude,
     required List<MetroLine> lines,
   }) {
     Station? nearestStation;
@@ -16,8 +30,8 @@ class NearestStationService {
     for (final line in lines) {
       for (final station in line.stations) {
         final distance = _calculateDistance(
-          lat1: place.latitude,
-          lon1: place.longitude,
+          lat1: latitude,
+          lon1: longitude,
           lat2: station.latitude,
           lon2: station.longitude,
         );
@@ -57,7 +71,5 @@ class NearestStationService {
     return earthRadius * c;
   }
 
-  double _toRadians(double degree) {
-    return degree * pi / 180;
-  }
+  double _toRadians(double degree) => degree * pi / 180;
 }

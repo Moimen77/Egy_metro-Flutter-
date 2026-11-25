@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../data/models/station.dart';
 import '../../../data/models/JourneyInfo.dart';
+import '../../../data/models/nearest_station_result.dart';
 
 class RouteController extends GetxController {
   final RouteRepository repository;
@@ -20,8 +21,13 @@ class RouteController extends GetxController {
   final RxList<Station> routeStations = <Station>[].obs;
   final Rxn<JourneyInfo> journeyInfo = Rxn<JourneyInfo>();
 
+  // Nearest station result
+  final Rxn<NearestStationResult> nearestStationResult =
+      Rxn<NearestStationResult>();
+
   // UI states
   final RxBool isCalculating = false.obs;
+  final RxBool isGettingLocation = false.obs;
   final RxString errorMessage = ''.obs;
 
   @override
@@ -42,6 +48,7 @@ class RouteController extends GetxController {
   // Change starting station
   void onStartStationChanged(int? stationId) {
     startStationId.value = stationId;
+    nearestStationResult.value = null;
     clearRouteResult();
   }
 
@@ -51,6 +58,59 @@ class RouteController extends GetxController {
     clearRouteResult();
   }
 
+  // Get current location and select nearest metro station
+  Future<void> useCurrentLocation() async {
+    if (isGettingLocation.value) return;
+
+    errorMessage.value = '';
+    isGettingLocation.value = true;
+
+    try {
+      final result = await repository.findNearestStationFromCurrentLocation();
+
+      if (result == null) {
+        errorMessage.value = 'No metro stations found';
+        return;
+      }
+
+      nearestStationResult.value = result;
+
+      // Automatically select nearest station as start station
+      startStationId.value = result.station.id;
+
+      clearRouteResult();
+
+      Get.snackbar(
+        'Location detected',
+        'Nearest station: ${result.station.name}',
+      );
+    } catch (e) {
+      errorMessage.value = _getLocationErrorMessage(e);
+
+      print('Location Error: $e');
+    } finally {
+      isGettingLocation.value = false;
+    }
+  }
+
+  String _getLocationErrorMessage(dynamic error) {
+    final message = error.toString();
+
+    if (message.contains('disabled')) {
+      return 'Please enable location services';
+    }
+
+    if (message.contains('permanently denied')) {
+      return 'Location permission permanently denied. Enable it from settings';
+    }
+
+    if (message.contains('denied')) {
+      return 'Location permission denied';
+    }
+
+    return 'Unable to get your current location';
+  }
+
   // Calculate route between selected stations
   void findRoute() {
     errorMessage.value = '';
@@ -58,13 +118,11 @@ class RouteController extends GetxController {
     final startId = startStationId.value;
     final destinationId = destinationStationId.value;
 
-    // Validate selections
     if (startId == null || destinationId == null) {
       errorMessage.value = 'Please select both stations';
       return;
     }
 
-    // Prevent selecting the same station
     if (startId == destinationId) {
       errorMessage.value =
           'Starting station and destination cannot be the same';
@@ -74,7 +132,6 @@ class RouteController extends GetxController {
     try {
       isCalculating.value = true;
 
-      // Find shortest route using BFS
       final result = repository.findRoute(
         startStationId: startId,
         destinationStationId: destinationId,
@@ -87,10 +144,8 @@ class RouteController extends GetxController {
         return;
       }
 
-      // Save route stations
       routeStations.assignAll(result);
 
-      // Calculate journey information
       journeyInfo.value = repository.calculateJourney(result);
     } catch (e) {
       routeStations.clear();
@@ -114,6 +169,7 @@ class RouteController extends GetxController {
   void clearAll() {
     startStationId.value = null;
     destinationStationId.value = null;
+    nearestStationResult.value = null;
 
     clearRouteResult();
   }

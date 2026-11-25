@@ -60,7 +60,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: AppTheme.light,
       getPages: AppPages.routes,
-      initialRoute: AppRoutes.placeSearch,
+      initialRoute: AppRoutes.routeSearch,
     );
   }
 }
